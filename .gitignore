@@ -1,0 +1,16 @@
+# Виртуальное окружение
+.venv/
+venv/
+ENV/
+env/
+
+# Конфиденциальные файлы
+app_secret.py
+*.secret.py
+secrets.py
+config.py
+
+# Другие стандартные исключения
+__pycache__/
+*.pyc
+.DS_Store
