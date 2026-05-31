@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero glass">
+    <div>
+        <p class="eyebrow">Live API machine learning web app</p>
+        <h1>Bitcoin movement forecast with Permutation Decision Trees</h1>
+        <p class="hero-text">
+            The application receives fresh BTCUSDT candles directly from the Bybit public API,
+            creates technical indicators, trains a Permutation Decision Tree and predicts whether
+            Bitcoin is more likely to grow or fall over the selected horizon.
+        </p>
+        <div class="chips">
+            <span>Live Bybit API</span>
+            <span>No CSV dataset</span>
+            <span>PDT algorithm</span>
+            <span>Flask website</span>
+        </div>
+    </div>
+    <form class="forecast-form" method="post" action="/forecast">
+        <label>
+            Data source
+            <select name="source">
+                <option value="bybit_api">Live Bybit API: BTCUSDT candles</option>
+            </select>
+        </label>
+        <label>
+            Forecast horizon, hours
+            <input name="horizon" type="number" min="1" max="72" value="{{ default_horizon }}">
+        </label>
+        <label>
+            Rows for training
+            <input name="rows" type="number" min="500" max="5000" value="{{ default_rows }}">
+        </label>
+        <button type="submit">Run live forecast</button>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </form>
+</section>
+
+<section class="grid three">
+    <div class="card">
+        <h3>1. Live data</h3>
+        <p>The backend requests BTCUSDT OHLCV candlesticks from Bybit API at runtime. The system does not depend on a local CSV file.</p>
+    </div>
+    <div class="card">
+        <h3>2. Features</h3>
+        <p>The model uses returns, volatility, volume signals, moving averages, RSI, MACD and Ichimoku-based indicators.</p>
+    </div>
+    <div class="card">
+        <h3>3. Forecast</h3>
+        <p>The output is a binary direction: expected growth or fall, confidence, metrics, baseline comparison and interpretable PDT rules.</p>
+    </div>
+</section>
+{% endblock %}

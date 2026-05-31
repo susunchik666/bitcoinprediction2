@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="result-header glass">
+    <div>
+        <p class="eyebrow">Forecast result</p>
+        <h1 class="{{ 'up' if result.prediction_value == 1 else 'down' }}">{{ result.prediction_label }}</h1>
+        <p class="muted">Horizon: {{ result.horizon }} hours · Last candle: {{ result.last_timestamp }}</p>
+        <p class="muted">Data source: <b>{{ result.source }}</b> {{ result.source_details }}</p>
+        
+    </div>
+    <div class="price-card">
+        <span>Current BTC price</span>
+        <strong>${{ result.current_price }}</strong>
+        <div class="confidence" style="--value: {{ result.confidence * 100 }}">
+            <span>{{ (result.confidence * 100) | round(1) }}%</span>
+        </div>
+        <small>model confidence</small>
+    </div>
+</section>
+
+<section class="chart-card glass">
+    <div id="price-chart"></div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>PDT metrics</h2>
+        <div class="metrics">
+            {% for key, value in result.metrics.items() %}
+                <div><span>{{ key }}</span><b>{{ value }}</b></div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card">
+        <h2>Baseline comparison</h2>
+        {% for model, metrics in result.baselines.items() %}
+            <h4>{{ model }}</h4>
+            <div class="mini-metrics">
+                <span>Accuracy: {{ metrics.accuracy }}</span>
+                <span>F1: {{ metrics.f1 }}</span>
+                <span>ROC-AUC: {{ metrics.roc_auc }}</span>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="grid two">
+    <div class="card">
+        <h2>Important features</h2>
+        <div class="bars">
+            {% for item in result.feature_importance %}
+                <div class="bar-row">
+                    <span>{{ item.feature }}</span>
+                    <div class="bar"><i style="width: {{ item.importance * 100 }}%"></i></div>
+                    <b>{{ item.importance }}</b>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card">
+        <h2>PDT rules</h2>
+        <ul class="rules">
+            {% for rule in result.rules %}
+                <li>{{ rule }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+
+<script>
+const data = {{ result.chart_data | tojson }};
+const candles = {
+    x: data.timestamp,
+    open: data.open,
+    high: data.high,
+    low: data.low,
+    close: data.close,
+    type: 'candlestick',
+    name: 'BTC candles'
+};
+const sma20 = {x: data.timestamp, y: data.sma20, type: 'scatter', mode: 'lines', name: 'SMA 20'};
+const sma50 = {x: data.timestamp, y: data.sma50, type: 'scatter', mode: 'lines', name: 'SMA 50'};
+Plotly.newPlot('price-chart', [candles, sma20, sma50], {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {color: '#eaf0ff'},
+    xaxis: {rangeslider: {visible: false}, gridcolor: 'rgba(255,255,255,.08)'},
+    yaxis: {gridcolor: 'rgba(255,255,255,.08)'},
+    margin: {l: 50, r: 30, t: 30, b: 40},
+    legend: {orientation: 'h'}
+}, {responsive: true});
+</script>
+{% endblock %}

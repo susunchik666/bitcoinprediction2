@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="glass page-text">
+    <p class="eyebrow">About the project</p>
+    <h1>How the forecasting system works</h1>
+    <p>
+        This software project is a Flask web application for short-horizon Bitcoin direction forecasting.
+        The main algorithm is a Permutation Decision Tree. Unlike a standard decision tree that uses Gini
+        or entropy, this model evaluates split quality through Effort-To-Compress, a sequence-complexity measure.
+    </p>
+    <p>
+        The target is binary: 1 means the future BTC close price is higher than the current close price after the
+        selected horizon, and 0 means it is lower or equal. The website shows the latest prediction, confidence,
+        quality metrics, baseline comparison and interpretable decision rules.
+    </p>
+    <p>
+        Market data is loaded online at runtime. The backend sends HTTP requests to Bybit's public V5 market
+        endpoint and receives BTCUSDT candlestick data. A local CSV dataset is not used in this version, so the
+        forecast is always based on newly requested API data.
+    </p>
+</section>
+{% endblock %}
